@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'alterar_senha_screen.dart';
 
 class ConfiguracoesScreen extends StatefulWidget {
   const ConfiguracoesScreen({super.key});
@@ -9,9 +10,9 @@ class ConfiguracoesScreen extends StatefulWidget {
 }
 
 class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
-  final _nomeController = TextEditingController();
+  final _nomeController  = TextEditingController();
   final _emailController = TextEditingController();
-  bool _notificacoesAtivadas = true;
+  bool  _notificacoesAtivadas = true;
 
   @override
   void initState() {
@@ -22,21 +23,21 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   Future<void> _carregarDados() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _nomeController.text = prefs.getString('nome') ?? '';
-      _emailController.text = prefs.getString('email') ?? '';
-      _notificacoesAtivadas = prefs.getBool('notificacoes') ?? true;
+      _nomeController.text        = prefs.getString('nome')         ?? '';
+      _emailController.text       = prefs.getString('email')        ?? '';
+      _notificacoesAtivadas       = prefs.getBool('notificacoes')   ?? true;
     });
   }
 
   Future<void> _salvarConfiguracoes() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('nome', _nomeController.text);
+    await prefs.setString('nome',  _nomeController.text);
     await prefs.setString('email', _emailController.text);
-    await prefs.setBool('notificacoes', _notificacoesAtivadas);
+    await prefs.setBool  ('notificacoes', _notificacoesAtivadas);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Configurações salvas com sucesso!")),
+      const SnackBar(content: Text('Configurações salvas com sucesso!')),
     );
   }
 
@@ -47,58 +48,108 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     super.dispose();
   }
 
+  OutlineInputBorder _roundedBorder() => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(30),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Configurações")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            const Text("Editar Perfil",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _nomeController,
-              decoration: const InputDecoration(labelText: "Nome"),
+      appBar: AppBar(title: const Text('Configurações')),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          // ---------- Perfil ----------
+          const Text(
+            'Editar Perfil',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+
+          TextFormField(
+            controller: _nomeController,
+            decoration: InputDecoration(
+              labelText: 'Nome',
+              prefixIcon: const Icon(Icons.person),
+              border: _roundedBorder(),
             ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "E-mail ou telefone"),
+          ),
+          const SizedBox(height: 12),
+
+          TextFormField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: 'E‑mail ou telefone',
+              prefixIcon: const Icon(Icons.email),
+              border: _roundedBorder(),
             ),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 10),
-            const Text("Notificações",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SwitchListTile(
-              title: const Text("Receber notificações"),
-              value: _notificacoesAtivadas,
-              onChanged: (value) {
-                setState(() {
-                  _notificacoesAtivadas = value;
-                });
-              },
+            keyboardType: TextInputType.emailAddress,
+          ),
+
+          const SizedBox(height: 28),
+          const Divider(),
+
+          // ---------- Senha ----------
+          ListTile(
+            leading: const Icon(Icons.lock),
+            title: const Text('Alterar senha'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AlterarSenhaScreen()),
+              );
+            },
+          ),
+
+          const Divider(),
+
+          // ---------- Notificações ----------
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text(
+              'Receber notificações',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 10),
-            const Text("Política de Privacidade",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text(
-              "Seus dados não serão compartilhados com terceiros. "
-                  "O uso do app está sujeito aos termos de privacidade da aplicação.",
-              style: TextStyle(color: Colors.grey[700]),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
+            activeColor: Theme.of(context).primaryColor,
+            value: _notificacoesAtivadas,
+            onChanged: (v) => setState(() => _notificacoesAtivadas = v),
+          ),
+
+          const Divider(),
+
+          // ---------- Privacidade ----------
+          const Text(
+            'Política de Privacidade',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Seus dados não serão compartilhados com terceiros. '
+                'O uso do app está sujeito aos termos de privacidade da aplicação.',
+            style: TextStyle(color: Colors.grey[700]),
+          ),
+
+          const SizedBox(height: 32),
+
+          // ---------- Botão Salvar ----------
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
               onPressed: _salvarConfiguracoes,
-              child: const Text("Salvar Configurações"),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text(
+                'Salvar Configurações',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
