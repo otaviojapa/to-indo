@@ -32,7 +32,14 @@
 
 ## 📸 Capturas de Tela
 
-> *(Você pode adicionar prints aqui futuramente usando `![descrição](caminho-da-imagem)`)*
+![image](https://github.com/user-attachments/assets/6318cd45-2a07-4981-979c-661c85a71c0f)
+
+![image](https://github.com/user-attachments/assets/a2dc16b4-5bd2-41cc-b2af-8c2b8178fba6)
+
+![image](https://github.com/user-attachments/assets/1a2aee29-0349-42f9-a1d5-279e3b7404ae)
+
+![image](https://github.com/user-attachments/assets/a21bd720-2ce1-470e-87cb-9492656d32ef)
+
 
 ---
 
